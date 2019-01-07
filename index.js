@@ -62,10 +62,16 @@ module.exports = function(query, cb, options) {
                 }
             })
     } else {
-        r = request.post(options.overpassUrl || 'http://overpass-api.de/api/interpreter', reqOptions, 
+        r = request.post(options.overpassUrl || 'http://overpass-api.de/api/interpreter', reqOptions,
             function (error, response, body) {
                 if (!error && response.statusCode === 200) {
-                    toGeoJSON(JSON.parse(body));
+                  try {
+                    var jsonBody = JSON.parse(body);
+                    toGeoJSON(jsonBody);
+                  } catch (e) {
+                    cb(e);
+                  }
+
                 } else if (error) {
                     cb(error);
                 } else if (response) {
